@@ -1,0 +1,118 @@
+---
+import '../styles/global.css';
+import { SITE, SOCIALS } from '../config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title = SITE.title,
+  description = SITE.description,
+  ogImage = SITE.ogImage,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url).href;
+const ogImageUrl = new URL(ogImage, Astro.site ?? SITE.url).href;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="canonical" href={canonical} />
+
+  <title>{title}</title>
+  <meta name="description" content={description} />
+
+  <!-- Open Graph — this is what unfurls in Discord / LinkedIn / iMessage -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={ogImageUrl} />
+  <meta property="og:site_name" content={SITE.name} />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImageUrl} />
+
+  <meta name="theme-color" content="#0D0F12" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">samir<span>_</span></a>
+    <div class="nav-links">
+      <a href="/#case-files">Case Files</a>
+      <a href="/#sim-lab">Sim Lab</a>
+      <a href="/#systems">Systems</a>
+      <a href="/tutorials">Tutorials</a>
+      <a href="/#bio">About</a>
+    </div>
+    <div class="nav-mobile-toggle" id="navToggle"><span></span><span></span><span></span></div>
+  </nav>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer>
+    <div class="footer-left">© {new Date().getFullYear()} {SITE.name} · {SITE.org}</div>
+    <div class="footer-links">
+      {SOCIALS.map((s) => (
+        <a href={s.url} target="_blank" rel="noopener noreferrer">{s.label}</a>
+      ))}
+      <a href="#" id="copyEmail" data-email={SITE.email}>Email</a>
+    </div>
+  </footer>
+
+  <script>
+    // Nav border on scroll
+    const nav = document.querySelector('nav');
+    const onScroll = () => nav?.classList.toggle('scrolled', window.scrollY > 50);
+    window.addEventListener('scroll', onScroll);
+    onScroll();
+
+    // Mobile menu
+    document.getElementById('navToggle')?.addEventListener('click', () => {
+      const links = document.querySelector('.nav-links') as HTMLElement | null;
+      if (!links) return;
+      links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    // Copy email to clipboard instead of firing a mailto:
+    const copyBtn = document.getElementById('copyEmail');
+    copyBtn?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const email = copyBtn.getAttribute('data-email') || '';
+      const original = copyBtn.textContent;
+      try {
+        await navigator.clipboard.writeText(email);
+        copyBtn.textContent = '[copied]';
+        copyBtn.style.color = '#22c55e';
+      } catch {
+        window.location.href = `mailto:${email}`;
+        return;
+      }
+      setTimeout(() => {
+        copyBtn.textContent = original;
+        copyBtn.style.color = '';
+      }, 1600);
+    });
+  </script>
+
+</body>
+</html>

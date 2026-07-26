@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const tutorials = (await getCollection('tutorials', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.number - b.data.number);
+---
+<BaseLayout
+  title="Tutorials — The Evidence Locker"
+  description="Step-by-step OpenGL, C++, and graphics programming tutorials. No hand-waving, no skipped steps."
+>
+  <div class="index-wrap">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <span class="section-title">The Evidence Locker</span>
+      <div class="section-line"></div>
+    </div>
+    <h1 class="section-heading">Tutorials &amp; Devlogs</h1>
+    <p class="section-sub">
+      Everything I've had to figure out the hard way, written down so you don't have to.
+    </p>
+
+    <div class="evidence-list">
+      {tutorials.map((t) => (
+        <a href={`/tutorials/${t.id}`} class="evidence-item">
+          <span class="evidence-num">{String(t.data.number).padStart(2, '0')}</span>
+          <span class="evidence-title">{t.data.title}</span>
+          {t.data.duration && <span class="evidence-tag">{t.data.duration}</span>}
+          <span class="evidence-arrow">→</span>
+        </a>
+      ))}
+      {tutorials.length === 0 && (
+        <p style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:13px;">
+          No tutorials published yet. First one is in production.
+        </p>
+      )}
+    </div>
+  </div>
+</BaseLayout>

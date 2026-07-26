@@ -1,0 +1,249 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+
+// Content now drives the page. Add a markdown file → card appears here.
+const cases = (await getCollection('cases', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+
+const tutorials = (await getCollection('tutorials', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.number - b.data.number)
+  .slice(0, 6);
+
+const badgeClass = { live: 'badge-live', dev: 'badge-dev', soon: 'badge-soon' };
+const badgeText = { live: 'Live', dev: 'In Dev', soon: 'Soon' };
+---
+
+<BaseLayout>
+  <Hero />
+
+  <!-- 01 · CASE FILES -->
+  <section id="case-files">
+    <div class="section-header reveal">
+      <span class="section-number">01</span>
+      <span class="section-title">Case Files</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-heading reveal">Shipped Products</h2>
+    <p class="section-sub reveal">
+      From raw code to production. Consumer-ready apps, tools, and software that people actually use.
+    </p>
+
+    <div class="case-grid">
+      {cases.map((c) => (
+        <a class="case-card reveal" href={`/cases/${c.id}`}>
+          <div class="case-card-top">
+            <span class={`case-badge ${badgeClass[c.data.status]}`}>{badgeText[c.data.status]}</span>
+            <span class="case-id">{c.data.caseId}</span>
+          </div>
+          <h3>{c.data.title}</h3>
+          <div class="tagline">{c.data.tagline}</div>
+          <p>{c.data.summary}</p>
+          <div class="tech-stack">
+            {c.data.stack.map((t) => <span class="tech-tag">{t}</span>)}
+          </div>
+          <div class="case-links">
+            <span class="case-link">Read the case file →</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- 02 · SIMULATION LAB -->
+  <section id="sim-lab">
+    <div class="section-header reveal">
+      <span class="section-number">02</span>
+      <span class="section-title">The Simulation Lab</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-heading reveal">Graphics &amp; Engine Work</h2>
+    <p class="section-sub reveal">
+      Manipulating pixels and memory from scratch. Custom rendering pipelines, voxel engines, and real-time graphics.
+    </p>
+
+    <div class="lab-content">
+      <div class="lab-text reveal">
+        <p>
+          I build graphics systems from the ground up — not with Unity or Unreal, but with raw
+          OpenGL, C++, and mathematics. Understanding what happens between your code and the GPU
+          is where real engineering lives.
+        </p>
+        <p>
+          Current work includes a custom voxel engine with chunk management, face culling
+          optimization, raycasting, and real-time camera interaction. Every frame is a puzzle in
+          linear algebra and memory management.
+        </p>
+      </div>
+
+      <div class="lab-capabilities reveal">
+        <div class="capability">
+          <div class="cap-icon">△</div>
+          <div>
+            <div class="cap-title">Custom Rendering Pipeline</div>
+            <div class="cap-desc">OpenGL shaders, vertex buffers, texture mapping, and lighting from scratch</div>
+          </div>
+        </div>
+        <div class="capability">
+          <div class="cap-icon">▦</div>
+          <div>
+            <div class="cap-title">Voxel Engine</div>
+            <div class="cap-desc">Chunk-based world generation, greedy meshing, face culling, and LOD systems</div>
+          </div>
+        </div>
+        <div class="capability">
+          <div class="cap-icon">◎</div>
+          <div>
+            <div class="cap-title">Raycasting &amp; Interaction</div>
+            <div class="cap-desc">Real-time ray-world intersection for camera and object interaction</div>
+          </div>
+        </div>
+        <div class="capability">
+          <div class="cap-icon">⚡</div>
+          <div>
+            <div class="cap-title">Performance Engineering</div>
+            <div class="cap-desc">Memory management, draw call optimization, and GPU profiling</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 · INTERROGATION ROOM -->
+  <section id="systems">
+    <div class="section-header reveal">
+      <span class="section-number">03</span>
+      <span class="section-title">The Interrogation Room</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-heading reveal">Systems &amp; Backend</h2>
+    <p class="section-sub reveal">
+      Rock-solid logic that doesn't break under pressure. Enterprise-grade backend architecture,
+      data pipelines, and automation.
+    </p>
+
+    <div class="systems-grid">
+      <div class="system-card reveal">
+        <div class="sys-icon">{'{ }'}</div>
+        <h4>Enterprise Java</h4>
+        <p>Record management systems, billing logic, transactional backends built for reliability and scale.</p>
+      </div>
+      <div class="system-card reveal">
+        <div class="sys-icon">⟁</div>
+        <h4>Data Pipelines</h4>
+        <p>Python web scrapers, data transformation scripts, and automated workflows that run without supervision.</p>
+      </div>
+      <div class="system-card reveal">
+        <div class="sys-icon">⊞</div>
+        <h4>API Architecture</h4>
+        <p>RESTful services, database schema design, and backend systems that handle real-world data at production scale.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 · EVIDENCE LOCKER -->
+  <section id="evidence">
+    <div class="section-header reveal">
+      <span class="section-number">04</span>
+      <span class="section-title">The Evidence Locker</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="evidence-content">
+      <div class="evidence-intro reveal">
+        <h2>Tutorials &amp; Devlogs</h2>
+        <p>
+          Documenting the investigation to teach others. Step-by-step breakdowns of hard
+          engineering problems — OpenGL, C++, graphics programming, and game development.
+          No hand-waving, no skipped steps.
+        </p>
+        <div class="evidence-topics">
+          {['OpenGL', 'C++', 'GLFW', 'GLAD', 'Shaders', 'Godot', 'Game Dev'].map((t) => (
+            <span class="evidence-topic">{t}</span>
+          ))}
+        </div>
+        <a href="/tutorials" class="btn btn-accent">All tutorials →</a>
+      </div>
+
+      <div class="evidence-list reveal">
+        {tutorials.map((t) => (
+          <a href={`/tutorials/${t.id}`} class="evidence-item">
+            <span class="evidence-num">{String(t.data.number).padStart(2, '0')}</span>
+            <span class="evidence-title">{t.data.title}</span>
+            {t.data.duration && <span class="evidence-tag">{t.data.duration}</span>}
+            <span class="evidence-arrow">→</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 · BIO -->
+  <section id="bio">
+    <div class="section-header reveal">
+      <span class="section-number">05</span>
+      <span class="section-title">About</span>
+      <div class="section-line"></div>
+    </div>
+    <h2 class="section-heading reveal">The Investigator</h2>
+
+    <div class="bio-content">
+      <div class="bio-text reveal">
+        <p>
+          I'm Samir — a software engineer driven by curiosity across the entire stack. From
+          low-level C++ graphics programming and custom game engines to enterprise Java
+          architecture and consumer mobile apps.
+        </p>
+        <p>
+          I treat every bug like a cold case, every bottleneck like a puzzle, and every project
+          like a complete investigation documented from the ground up. I don't just write code —
+          I understand systems. How they work, why they break, and how to make them better.
+        </p>
+        <div class="bio-mission">
+          <p>
+            "I treat every bug like a cold case, every bottleneck like a puzzle, and every project
+            like a complete investigation documented from the ground up."
+          </p>
+        </div>
+      </div>
+
+      <div class="bio-stats reveal">
+        <div class="bio-stat">
+          <div class="bio-stat-val">{cases.filter((c) => c.data.status === 'live').length}+</div>
+          <div class="bio-stat-label">Apps shipped to production</div>
+          <div class="bio-stat-sub">App Store + Play Store</div>
+        </div>
+        <div class="bio-stat">
+          <div class="bio-stat-val">C++</div>
+          <div class="bio-stat-label">Primary systems language</div>
+          <div class="bio-stat-sub">OpenGL · GLFW · GLAD</div>
+        </div>
+        <div class="bio-stat">
+          <div class="bio-stat-val">Full</div>
+          <div class="bio-stat-label">Stack coverage</div>
+          <div class="bio-stat-sub">GPU → Backend → Mobile → Store</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add('visible')),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+    document.querySelectorAll('a[href^="/#"], a[href^="#"]').forEach((a) => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href')!.split('#')[1];
+        const target = document.getElementById(id);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</BaseLayout>

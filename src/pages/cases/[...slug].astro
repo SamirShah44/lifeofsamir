@@ -1,0 +1,31 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('cases', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const statusText = { live: 'Live', dev: 'In Dev', soon: 'Soon' };
+---
+<ArticleLayout
+  title={d.title}
+  lede={d.summary}
+  backHref="/#case-files"
+  backLabel="All case files"
+  badge={d.caseId}
+  meta={[statusText[d.status], d.stack.slice(0, 3).join(' · ')]}
+>
+  {d.links.length > 0 && (
+    <div class="case-links" style="margin-bottom:36px;">
+      {d.links.map((l) => (
+        <a href={l.url} class="case-link" target="_blank" rel="noopener">{l.label} ↗</a>
+      ))}
+    </div>
+  )}
+  <Content />
+</ArticleLayout>

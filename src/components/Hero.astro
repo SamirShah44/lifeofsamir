@@ -1,0 +1,111 @@
+---
+import { SITE } from '../config';
+---
+
+<section class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-tag">Software Engineer</div>
+    <h1>
+      Raw systems<span class="accent">.</span><br />
+      <span class="dim">Clean interfaces.</span>
+    </h1>
+    <p class="hero-sub">
+      I dissect low-level engine mechanics under the hood and package them into
+      rock-solid systems and sleek consumer products. From C++ and OpenGL to the
+      App Store.
+    </p>
+    <div class="hero-cta">
+      <a href="#case-files" class="btn btn-accent">View case files</a>
+      <a href={SITE.resume} class="btn btn-ghost" target="_blank" rel="noopener">Download resume ↓</a>
+    </div>
+    <div class="hero-status">
+      <div class="status-item">
+        <div class="status-dot"></div>
+        Unsend — live on App Store &amp; Play Store
+      </div>
+      <div class="status-item">
+        <div class="status-dot amber"></div>
+        OpenGL series — in production
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const canvas = document.getElementById('hero-canvas') as HTMLCanvasElement | null;
+
+  // Bail out cleanly on reduced-motion, or if WebGL isn't available.
+  // The hero still reads fine without it — no broken canvas, no battery drain.
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasWebGL = (() => {
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch { return false; }
+  })();
+
+  if (canvas && hasWebGL && !prefersReduced) {
+    const THREE = await import('three');
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.z = 4;
+
+    const outer = new THREE.Mesh(
+      new THREE.IcosahedronGeometry(2, 1),
+      new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.15 })
+    );
+    const inner = new THREE.Mesh(
+      new THREE.OctahedronGeometry(1, 0),
+      new THREE.MeshBasicMaterial({ color: 0xffc107, wireframe: true, transparent: true, opacity: 0.08 })
+    );
+    scene.add(outer, inner);
+
+    const count = 200;
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count * 3; i++) positions[i] = (Math.random() - 0.5) * 10;
+    const dustGeo = new THREE.BufferGeometry();
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const dust = new THREE.Points(
+      dustGeo,
+      new THREE.PointsMaterial({ color: 0xffc107, size: 0.015, transparent: true, opacity: 0.3 })
+    );
+    scene.add(dust);
+
+    let mx = 0, my = 0;
+    document.addEventListener('mousemove', (e) => {
+      mx = (e.clientX / window.innerWidth) * 2 - 1;
+      my = (e.clientY / window.innerHeight) * 2 - 1;
+    });
+
+    // Pause the loop when the hero scrolls out of view — no wasted GPU cycles.
+    let visible = true;
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; })
+      .observe(canvas.parentElement!);
+
+    const tick = () => {
+      requestAnimationFrame(tick);
+      if (!visible) return;
+      outer.rotation.x += 0.002 + my * 0.003;
+      outer.rotation.y += 0.003 + mx * 0.003;
+      inner.rotation.x -= 0.003 - my * 0.002;
+      inner.rotation.y -= 0.002 - mx * 0.002;
+      dust.rotation.y += 0.0005;
+      renderer.render(scene, camera);
+    };
+    tick();
+
+    window.addEventListener('resize', () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    });
+  } else if (canvas) {
+    canvas.style.display = 'none';
+  }
+</script>
