@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PRIVACY_APPS } from '../../data/privacy';
+---
+
+<BaseLayout
+  title="Privacy Policies — Typhoon Labs"
+  description="Privacy policies for apps and games published by Typhoon Labs."
+>
+  <div class="index-wrap privacy-index">
+    <a href="/" class="article-back">← Back home</a>
+
+    <div class="section-header">
+      <span class="section-number">LEGAL</span>
+      <span class="section-title">Privacy Center</span>
+      <div class="section-line"></div>
+    </div>
+
+    <h1 class="section-heading">Privacy Policies</h1>
+    <p class="section-sub privacy-intro">
+      Select an app or game to read its current privacy policy.
+    </p>
+
+    <div class="privacy-grid">
+      {PRIVACY_APPS.map((app) => (
+        <a class="privacy-card" href={app.href}>
+          <div class="privacy-card-top">
+            <span class="privacy-status">Current</span>
+            <span class="privacy-platform">{app.platform}</span>
+          </div>
+
+          <h2>{app.name}</h2>
+          <p>{app.description}</p>
+
+          <div class="privacy-card-footer">
+            <span>Updated {app.lastUpdated}</span>
+            <span class="privacy-card-arrow">Read policy →</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="privacy-note">
+      <strong>Developer:</strong> Typhoon Labs
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .privacy-index { max-width: 920px; }
+  .privacy-intro { max-width: 680px; }
+
+  .privacy-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 38px;
+  }
+
+  .privacy-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 250px;
+    padding: 26px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color .3s, background .3s, transform .3s;
+  }
+
+  .privacy-card:hover {
+    border-color: var(--accent);
+    background: var(--surface-hover);
+    transform: translateY(-2px);
+  }
+
+  .privacy-card-top,
+  .privacy-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .privacy-status,
+  .privacy-platform,
+  .privacy-card-footer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .7px;
+  }
+
+  .privacy-status {
+    padding: 4px 9px;
+    border-radius: 4px;
+    border: 1px solid rgba(34, 197, 94, .28);
+    background: rgba(34, 197, 94, .06);
+    color: var(--green);
+    text-transform: uppercase;
+  }
+
+  .privacy-platform { color: var(--text-dim); }
+
+  .privacy-card h2 {
+    margin-top: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    line-height: 1.25;
+  }
+
+  .privacy-card > p {
+    margin-top: 12px;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .privacy-card-footer {
+    margin-top: auto;
+    padding-top: 28px;
+    color: var(--text-dim);
+  }
+
+  .privacy-card-arrow { color: var(--accent); }
+
+  .privacy-note {
+    margin-top: 24px;
+    padding: 18px 20px;
+    border-left: 2px solid var(--accent);
+    background: var(--accent-glow);
+    border-radius: 0 8px 8px 0;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .privacy-note strong { color: var(--text); }
+
+  @media (max-width: 768px) {
+    .privacy-grid { grid-template-columns: 1fr; }
+    .privacy-card { min-height: 230px; }
+    .privacy-card-top,
+    .privacy-card-footer { align-items: flex-start; }
+  }
+</style>
